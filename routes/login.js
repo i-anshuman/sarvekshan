@@ -1,18 +1,10 @@
-const express = require('express');
-const router  = express.Router();
-const Login   = require('../controllers/login');
+const express  = require('express');
+const passport = require('passport');
+const router   = express.Router();
 
-router.post('/', (req, res) => {
-  const { email, password } = { ...req.body };
-  console.log(email + " : " + password);
-  Login(email, password, (error, result) => {
-    if (error) {
-      res.json({ error : error });
-    }
-    else {
-      res.json({ result });
-    }
-  });
-});
+router.post('/', passport.authenticate("local", {
+  failureRedirect: '/error',
+  successRedirect: '/profile'
+}));
 
 module.exports = router;
