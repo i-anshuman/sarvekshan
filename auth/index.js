@@ -28,7 +28,7 @@ const authentication = () => {
         if (!user) {
           done(null, false, { message: "User not found." });
         }
-        if (!bcrypt.compareSync(password, user.password)) {
+        else if (!bcrypt.compareSync(password, user.password)) {
           done(null, false, { message: "Incorrect Password." });
         }
         else {
