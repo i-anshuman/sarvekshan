@@ -27,4 +27,13 @@ const verifySignupInputs = (req, res, next) => {
   }
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs };
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    next();
+  }
+  else {
+    res.redirect('/');
+  }
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, ensureAuthenticated };
