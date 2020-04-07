@@ -5,7 +5,8 @@ const { verifyLoginInputs } = require('../utils/middlewares');
 
 router.post('/', verifyLoginInputs, passport.authenticate("local", {
   failureRedirect: '/error',
-  successRedirect: '/profile'
+  successRedirect: '/profile',
+  failureFlash: "Incorrect email or password"
 }));
 
 module.exports = router;
