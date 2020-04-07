@@ -21,7 +21,7 @@ const authentication = () => {
       passwordField: 'password'
     },
     (email, password, done) => {
-      Users.findOne({ email: email }, (error, user) => {
+      Users.findOneAndUpdate({ email: email }, { lastLogin: Date.now() }, {new: true}, (error, user) => {
         if (error) {
           done(error);
         }
