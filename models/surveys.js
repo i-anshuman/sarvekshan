@@ -25,6 +25,11 @@ const surveys = new Schema({
     type: Date,
     required: true
   },
+  published: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   questions: [ Questions ]
 });
 
