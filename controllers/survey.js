@@ -1,8 +1,10 @@
-const Users   = require('../models/users');
-const Surveys = require('../models/surveys');
+const Users    = require('../models/users');
+const Surveys  = require('../models/surveys');
+const mongoose = require('mongoose');
+const ObjectID = mongoose.Types.ObjectId;
 
 const add = (survey, callback) => {
-  Users.findOne({ _id: survey.creatorID }, (error, user) => {
+  Users.findOne({ _id: new ObjectID(survey.creatorID) }, (error, user) => {
     if (error) {
       callback(error);
     }
@@ -12,15 +14,66 @@ const add = (survey, callback) => {
     else {
       const newSurvey = new Surveys(survey);
       newSurvey.save((error, savedSurvey) => {
-        if (error) {
-          callback(error);
-        }
-        else {
-          callback(null, savedSurvey);
-        }
+        callback(error, savedSurvey);
       });
     }
   });
 }
 
-module.exports = { add };
+const view = (surveyID, userID, callback) => {
+  Surveys.findOne(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) }, 
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+const list = (userID, callback) => {
+  Surveys.find({ creatorID: new ObjectID(userID) }, (error, surveys) => {
+    callback(error, surveys);
+  });
+}
+
+const publish = (surveyID, userID, callback) => {
+  Surveys.findOneAndUpdate(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) }, 
+    { published: true}, 
+    { new: true }, 
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+const del = (surveyID, userID, callback) => {
+  Surveys.deleteOne(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) },
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+const edit = (surveyID, userID, data, callback) => {
+  Surveys.findOneAndUpdate(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) },
+    data, { new: true },
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+const addQuestion = (surveyID, userID, question, callback) => {
+  Surveys.findOneAndUpdate(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) }, 
+    { $push: { questions: question } }, 
+    { new: true }, 
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+module.exports = { add, view, list, publish, del, edit, addQuestion };
