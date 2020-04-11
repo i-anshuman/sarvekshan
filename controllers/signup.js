@@ -16,12 +16,7 @@ const signup = (fullname, email, password, callback) => {
         password: bcrypt.hashSync(password, 10)
       });
       newUser.save((error, savedUser) => {
-        if (error) {
-          callback(error);
-        }
-        else {
-          callback(null, savedUser);
-        }
+        callback(error, savedUser);
       });
     }
   });
