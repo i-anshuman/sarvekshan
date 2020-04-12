@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { add, list, view, addQuestion, publish, del, edit } = require('../controllers/survey');
-const { ensureAuthenticated, verifySurveyInputs } = require('../utils/middlewares');
+const { ensureAuthenticated, verifySurveyInputs, verifySurveyID } = require('../utils/middlewares');
 
 router.post('/new', ensureAuthenticated, verifySurveyInputs, (req, res) => {
   const { validityDate, validityTime } = { ...req.body };
@@ -21,7 +21,7 @@ router.post('/new', ensureAuthenticated, verifySurveyInputs, (req, res) => {
   });
 });
 
-router.get('/view/:surveyID', ensureAuthenticated, (req, res) => {
+router.get('/view/:surveyID', ensureAuthenticated, verifySurveyID, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   view(surveyID, userID, (error, survey) => {
@@ -45,7 +45,7 @@ router.get('/list', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/publish/:surveyID', ensureAuthenticated, (req, res) => {
+router.get('/publish/:surveyID', ensureAuthenticated, verifySurveyID, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   publish(surveyID, userID, (error, survey) => {
@@ -58,7 +58,7 @@ router.get('/publish/:surveyID', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/delete/:surveyID', ensureAuthenticated, (req, res) => {
+router.get('/delete/:surveyID', ensureAuthenticated, verifySurveyID, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   del(surveyID, userID, (error, survey) => {
@@ -71,7 +71,7 @@ router.get('/delete/:surveyID', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/edit/:surveyID', ensureAuthenticated, (req, res) => {
+router.post('/edit/:surveyID', ensureAuthenticated, verifySurveyID, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   const { field, value } = { ...req.body };
@@ -87,7 +87,7 @@ router.post('/edit/:surveyID', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/edit/:surveyID/addQuestion', ensureAuthenticated, (req, res) => {
+router.post('/edit/:surveyID/addQuestion', ensureAuthenticated, verifySurveyID, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   const { question, type } = { ...req.body };
