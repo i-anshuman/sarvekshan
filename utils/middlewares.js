@@ -1,4 +1,4 @@
-const { isName, isDate, isTime, isEmail, isTitle, isDescription } = require('./validator');
+const { isName, isDate, isTime, isEmail, isTitle, isDescription, isObjectID } = require('./validator');
 
 const verifyLoginInputs = (req, res, next) => {
   const email = req.body.email;
@@ -68,4 +68,13 @@ const ensureAuthenticated = (req, res, next) => {
   }
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated };
+const verifySurveyID = (req, res, next) => {
+  if (isObjectID(req.params.surveyID)) {
+    next();
+  }
+  else {
+    res.json({ error: "Invalid ID." });
+  }
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID };
