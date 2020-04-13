@@ -1,4 +1,4 @@
-const { isName, isDate, isTime, isEmail, isTitle, isDescription, isObjectID } = require('./validator');
+const { isName, isDate, isTime, isEmail, isTitle, isDescription, isObjectID, isQuestion, isOption, isValidOptionType } = require('./validator');
 
 const verifyLoginInputs = (req, res, next) => {
   const email = req.body.email;
@@ -77,4 +77,28 @@ const verifySurveyID = (req, res, next) => {
   }
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID };
+const verifyQuestionInputs = (req, res, next) => {
+  const { question, type, options } = { ...req.body };
+  const textbox = parseInt(req.body.textbox);
+  const errors = {};
+  if (!isQuestion(question)) {
+    errors.question = "Invalid question format.";
+  }
+  if (!isValidOptionType(type)) {
+    errors.type = "Invalid option type.";
+  }
+  if (options.length < 2) {
+    errors.options = "Question must have at least 2 options.";
+  }
+  else if (!options.every(option => isOption(option))) {
+    errors.options = "Invalid option format.";
+  }
+  if (Object.keys(errors).length > 0) {
+    res.json({ errors });
+  }
+  else {
+    next();
+  }
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID, verifyQuestionInputs };
