@@ -1,4 +1,5 @@
 const { isName, isDate, isTime, isEmail, isTitle, isDescription, isObjectID, isQuestion, isOption, isValidOptionType } = require('./validator');
+const { view } = require('../controllers/survey');
 
 const verifyLoginInputs = (req, res, next) => {
   const email = req.body.email;
@@ -101,4 +102,39 @@ const verifyQuestionInputs = (req, res, next) => {
   }
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID, verifyQuestionInputs };
+const isPublishable = (req, res, next) => {
+  const surveyID = req.params.surveyID;
+  const userID = req.user._id;
+  view(surveyID, userID, (error, survey) => {
+    if (error) {
+      res.json({ error: "An error occured while verification." });
+    }
+    else if (survey.questions.length === 0) {
+      res.json({ error: "To publish a survey, add at least one question." });
+    }
+    else if (survey.published) {
+      res.json({ error: "Survey already publihed." });
+    }
+    else {
+      next();
+    }
+  });
+}
+
+const isPublished = (req, res, next) => {
+  const surveyID = req.params.surveyID;
+  const userID = req.user._id;
+  view(surveyID, userID, (error, survey) => {
+    if (error) {
+      res.json({ error: "An error occured while verification." });
+    }
+    else if (survey.published) {
+      res.json({ error: "Unpublished survey." });
+    }
+    else {
+      next();
+    }
+  });
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID, verifyQuestionInputs, isPublishable, isPublished };
