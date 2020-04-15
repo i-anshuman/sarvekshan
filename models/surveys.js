@@ -33,4 +33,11 @@ const surveys = new Schema({
   questions: [ Questions ]
 });
 
+surveys.post('findOneAndUpdate', (result) => {
+  if (result.questions.length === 0) {
+    result.published = false;
+    result.save();
+  }
+});
+
 module.exports = new mongoose.model('Surveys', surveys);
