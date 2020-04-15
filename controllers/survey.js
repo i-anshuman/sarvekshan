@@ -35,10 +35,10 @@ const list = (userID, callback) => {
   });
 }
 
-const publish = (surveyID, userID, callback) => {
+const publish = (surveyID, userID, state, callback) => {
   Surveys.findOneAndUpdate(
     { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID) }, 
-    { published: true}, 
+    { published: state }, 
     { new: true }, 
     (error, survey) => {
       callback(error, survey);
