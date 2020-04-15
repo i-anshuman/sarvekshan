@@ -69,12 +69,20 @@ const ensureAuthenticated = (req, res, next) => {
   }
 }
 
-const verifySurveyID = (req, res, next) => {
-  if (isObjectID(req.params.surveyID)) {
-    next();
+const verifyID = (req, res, next) => {
+  const inputs = req.params;
+  const keys = Object.keys(inputs).filter(key => /ID$/.test(key));
+  const errors = {};
+  keys.forEach(key => {
+    if (!isObjectID(inputs[key])) {
+      errors[key.slice(0, -2)] = `Invalid ${key.slice(0, -2)} ${key.slice(-2)}`;
+    }
+  });
+  if (Object.keys(errors).length > 0) {
+    res.json({ errors });
   }
   else {
-    res.json({ error: "Invalid ID." });
+    next();
   }
 }
 
@@ -137,4 +145,4 @@ const isPublished = (req, res, next) => {
   });
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifySurveyID, verifyQuestionInputs, isPublishable, isPublished };
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifyID, verifyQuestionInputs, isPublishable, isPublished };
