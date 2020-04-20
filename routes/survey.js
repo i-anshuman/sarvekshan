@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { add, list, view, addQuestion, publish, del, edit, deleteQuestion } = require('../controllers/survey');
-const { ensureAuthenticated, verifySurveyInputs, verifyID, verifyQuestionInputs, isPublishable } = require('../utils/middlewares');
+const { ensureAuthenticated, verifySurveyInputs, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifyEditInputs } = require('../utils/middlewares');
 
 router.post('/new', ensureAuthenticated, verifySurveyInputs, (req, res) => {
   const { validityDate, validityTime } = { ...req.body };
@@ -45,10 +45,11 @@ router.get('/list', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/publish/:surveyID', ensureAuthenticated, verifyID, isPublishable, (req, res) => {
+router.get('/publish/:surveyID/:state?', ensureAuthenticated, verifyID, isPublishable, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
-  publish(surveyID, userID, (error, survey) => {
+  const state = req.params.state ? true : false;
+  publish(surveyID, userID, state, (error, survey) => {
     if (error) {
       res.json({ error: error });
     }
@@ -57,6 +58,8 @@ router.get('/publish/:surveyID', ensureAuthenticated, verifyID, isPublishable, (
     }
   });
 });
+
+router.post('/status/:surveyID', ensureAuthenticated, verifyID, isPublished);
 
 router.get('/delete/:surveyID', ensureAuthenticated, verifyID, (req, res) => {
   const surveyID = req.params.surveyID;
@@ -71,15 +74,22 @@ router.get('/delete/:surveyID', ensureAuthenticated, verifyID, (req, res) => {
   });
 });
 
-router.post('/edit/:surveyID', ensureAuthenticated, verifyID, (req, res) => {
+router.post('/edit/:surveyID', ensureAuthenticated, verifyID, verifyEditInputs, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   const { field, value } = { ...req.body };
   const data = {};
-  data[field] = value;
+  switch (field) {
+    case "validity":
+      const { validityDate, validityTime } = { ...req.body };
+      data[field] = `${validityDate}T${validityTime}`;
+      break;
+    default:
+      data[field] = value;
+  }
   edit(surveyID, userID, data, (error, survey) => {
     if (error) {
-      res.json({ error: error });
+      res.json({ error });
     }
     else {
       res.json({ survey });
@@ -96,7 +106,7 @@ router.post('/edit/:surveyID/questions/add', ensureAuthenticated, verifyID, veri
   });
   addQuestion(surveyID, userID, { question, type, options }, (error, survey) => {
     if (error) {
-      res.json({ error: error });
+      res.json({ error });
     }
     else {
       res.json({ survey });
