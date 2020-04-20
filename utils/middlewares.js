@@ -113,15 +113,16 @@ const verifyQuestionInputs = (req, res, next) => {
 const isPublishable = (req, res, next) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
+  const state = req.params.state ? true : false;
   view(surveyID, userID, (error, survey) => {
     if (error) {
       res.json({ error: "An error occured while verification." });
     }
-    else if (survey.questions.length === 0) {
+    else if (state === true && survey.questions.length === 0) {
       res.json({ error: "To publish a survey, add at least one question." });
     }
-    else if (survey.published) {
-      res.json({ error: "Survey already publihed." });
+    else if (state === true && survey.published) {
+      res.json({ message: "Survey already publihed." });
     }
     else {
       next();
@@ -129,18 +130,15 @@ const isPublishable = (req, res, next) => {
   });
 }
 
-const isPublished = (req, res, next) => {
+const isPublished = (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   view(surveyID, userID, (error, survey) => {
     if (error) {
       res.json({ error: "An error occured while verification." });
     }
-    else if (survey.published) {
-      res.json({ error: "Unpublished survey." });
-    }
     else {
-      next();
+      res.json({ state: survey.published });
     }
   });
 }
