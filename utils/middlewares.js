@@ -143,4 +143,38 @@ const isPublished = (req, res) => {
   });
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifyID, verifyQuestionInputs, isPublishable, isPublished };
+const verifyEditInputs = (req, res, next) => {
+  const { field, value } = { ...req.body };
+  let error = {};
+  switch (field) {
+    case "title":
+      if (!isTitle(value)) {
+        error.title = "Invalid title format.";
+      }
+      break;
+    case "description":
+      if (!isDescription(value)) {
+        error.title = "Invalid description format.";
+      }
+      break;
+    case "validity":
+      const { validityDate, validityTime } = { ...req.body };
+      if (!isDate(validityDate)) {
+        error.date = "Invalid date format.";
+      }
+      if (!isTime(validityTime)) {
+        error.time = "Invalid time format.";
+      }
+      break;
+    default:
+      error = "Invalid option.";
+  }
+  if (Object.keys(error).length > 0) {
+    res.json({ error });
+  }
+  else {
+    next();
+  }
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifyEditInputs };
