@@ -87,4 +87,16 @@ const deleteQuestion = (surveyID, userID, questionID, callback) => {
   );
 }
 
-module.exports = { add, view, list, publish, del, edit, addQuestion, deleteQuestion };
+const editQuestion = (surveyID, userID, questionID, data, callback) => {
+  const { field, value } = { ...data };
+  Surveys.findOneAndUpdate(
+    { _id: new ObjectID(surveyID), creatorID: new ObjectID(userID), "questions._id": questionID },
+    { $set: { ["questions.$."+field]: value } },
+    { new: true },
+    (error, survey) => {
+      callback(error, survey);
+    }
+  );
+}
+
+module.exports = { add, view, list, publish, del, edit, addQuestion, deleteQuestion, editQuestion };
