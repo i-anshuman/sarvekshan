@@ -150,7 +150,7 @@ const isPublished = (req, res) => {
   });
 }
 
-const verifyEditInputs = (req, res, next) => {
+const verifySurveyEditInputs = (req, res, next) => {
   const { field, value } = { ...req.body };
   let error = {};
   switch (field) {
@@ -184,4 +184,29 @@ const verifyEditInputs = (req, res, next) => {
   }
 }
 
-module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifyEditInputs };
+const verifyQuestionEditInputs = (req, res, next) => {
+  const { field, value } = { ...req.body };
+  let error = {};
+  switch (field) {
+    case "question":
+      if (!isQuestion(value)) {
+        error.question = "Invalid question format.";
+      }
+      break;
+    case "type":
+      if (!isValidOptionType(value)) {
+        error.type = "Invalid option type.";
+      }
+      break;
+    default:
+      error = "Invalid option.";
+  }
+  if (Object.keys(error).length > 0) {
+    res.json({ error });
+  }
+  else {
+    next();
+  }
+}
+
+module.exports = { verifyLoginInputs, verifySignupInputs, verifySurveyInputs, ensureAuthenticated, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifySurveyEditInputs, verifyQuestionEditInputs };
