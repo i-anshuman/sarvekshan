@@ -88,7 +88,7 @@ const verifyID = (req, res, next) => {
 
 const verifyQuestionInputs = (req, res, next) => {
   const { question, type, options } = { ...req.body };
-  const textbox = parseInt(req.body.textbox);
+  const textbox = req.body.textbox ? true : false;
   const errors = {};
   if (!isQuestion(question)) {
     errors.question = "Invalid question format.";
@@ -96,11 +96,18 @@ const verifyQuestionInputs = (req, res, next) => {
   if (!isValidOptionType(type)) {
     errors.type = "Invalid option type.";
   }
-  if (options.length < 2) {
-    errors.options = "Question must have at least 2 options.";
+  if (Array.isArray(options)) {
+    if (!options.every(option => isOption(option))) {
+      errors.options = "Invalid option format.";
+    }
   }
-  else if (!options.every(option => isOption(option))) {
-    errors.options = "Invalid option format.";
+  else {
+    if (!textbox) {
+      errors.option = "Option of a question with only one option must be a textbox.";
+    }
+    else if (!isOption(options)) {
+      errors.option = "Invalid option format.";
+    }
   }
   if (Object.keys(errors).length > 0) {
     res.json({ errors });
