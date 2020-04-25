@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
-const { add, list, view, addQuestion, publish, del, edit, deleteQuestion } = require('../controllers/survey');
-const { ensureAuthenticated, verifySurveyInputs, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifyEditInputs } = require('../utils/middlewares');
+const { add, list, view, addQuestion, publish, del, edit, deleteQuestion, editQuestion } = require('../controllers/survey');
+const { ensureAuthenticated, verifySurveyInputs, verifyID, verifyQuestionInputs, isPublishable, isPublished, verifySurveyEditInputs, verifyQuestionEditInputs } = require('../utils/middlewares');
 
 router.post('/new', ensureAuthenticated, verifySurveyInputs, (req, res) => {
   const { validityDate, validityTime } = { ...req.body };
@@ -74,7 +74,7 @@ router.get('/delete/:surveyID', ensureAuthenticated, verifyID, (req, res) => {
   });
 });
 
-router.post('/edit/:surveyID', ensureAuthenticated, verifyID, verifyEditInputs, (req, res) => {
+router.post('/edit/:surveyID', ensureAuthenticated, verifyID, verifySurveyEditInputs, (req, res) => {
   const surveyID = req.params.surveyID;
   const userID = req.user._id;
   const { field, value } = { ...req.body };
@@ -125,6 +125,21 @@ router.get('/edit/:surveyID/questions/delete/:questionID', ensureAuthenticated, 
   const surveyID = req.params.surveyID;
   const questionID = req.params.questionID;
   deleteQuestion(surveyID, userID, questionID, (error, survey) => {
+    if (error) {
+      res.json({ error });
+    }
+    else {
+      res.json({ survey });
+    }
+  });
+});
+
+router.post('/edit/:surveyID/questions/edit/:questionID/', ensureAuthenticated, verifyID, verifyQuestionEditInputs, (req, res) => {
+  const userID = req.user._id;
+  const surveyID = req.params.surveyID;
+  const questionID = req.params.questionID;
+  const { field, value } = { ...req.body };
+  editQuestion(surveyID, userID, questionID, { field, value }, (error, survey) => {
     if (error) {
       res.json({ error });
     }
