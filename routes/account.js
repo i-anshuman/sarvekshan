@@ -1,9 +1,9 @@
 'use strict';
 
-const router   = require('express').Router();
+const router = require('express').Router();
 const { watchError } = require('../middlewares');
 const { sign, verify } = require('../utils/jwt');
-const { signup, signin }   = require('../controllers/account');
+const { signup, signin } = require('../controllers/account');
 const { valiateSignupInputs, valiateSigninInputs } = require('../validators/account');
 
 router.post('/signup', valiateSignupInputs(), watchError, (req, res) => {
