@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "An online survey application.",
   "main": "server.js",
+  "private": true,
   "scripts": {
-    "start": "nodemon server.js"
+      "dev": "NODE_ENV=dev nodemon server.js",
+    "start": "NODE_ENV=prod node server.js"
   },
   "repository": {
     "type": "git",
