@@ -3,7 +3,7 @@
 const { verify } = require('../utils/jwt');
 const { validationResult } = require('express-validator');
 
-const watchErrors = (req, res, next) => {
+const watchError = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const extractedErrors = {};
@@ -30,4 +30,4 @@ const notFound = (req, res) => {
   res.status(404).json({ error: "404 Not Found!!" });
 };
 
-module.exports = { watchErrors, ensureAuthenticated, notFound };
+module.exports = { watchError, ensureAuthenticated, notFound };
