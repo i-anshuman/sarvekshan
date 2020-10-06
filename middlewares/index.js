@@ -52,4 +52,18 @@ const isPublishable = (req, res, next) => {
   });
 };
 
-module.exports = { watchError, ensureAuthenticated, notFound, isPublishable };
+const doesSurveyExist = (req, res, next) => {
+  const surveyID = req.params.surveyID;
+  const userID = res.locals.user._id;
+  view(surveyID, userID, (error, survey) => {
+    if (error) {
+      return res.status(400).json({ error });
+    }
+    if (!survey) {
+      return res.status(404).json({ error: "Survey not found." });
+    }
+    next();
+  });
+};
+
+module.exports = { watchError, ensureAuthenticated, notFound, isPublishable, doesSurveyExist };
