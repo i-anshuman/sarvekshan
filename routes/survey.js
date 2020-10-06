@@ -2,10 +2,14 @@
 
 const router  = require('express').Router();
 const { add, list, view, publish, del, edit } = require('../controllers/survey');
-const { watchError, isPublishable } = require('../middlewares');
-const { valiateSurveyInputs, validatePublishStatus,
-  validateIDs, validateSurveyEditInputs
+const { watchError, isPublishable, doesSurveyExist } = require('../middlewares');
+const {
+  validateIDs,
+  valiateSurveyInputs,
+  validatePublishStatus,
+  validateSurveyEditInputs
 } = require('../validators/survey');
+const question = require('./question');
 
 router.post('/new', valiateSurveyInputs(), watchError, (req, res) => {
   const { title, description, validityDate, validityTime } = { ...req.body };
@@ -84,5 +88,12 @@ router.delete('/delete/:surveyID', validateIDs('surveyID'), watchError, (req, re
         : res.status(200).json({deletedCount});
   });
 });
+
+router.use('/:surveyID/question', 
+  validateIDs('surveyID'),
+  watchError,
+  doesSurveyExist,
+  question
+);
 
 module.exports = router;
