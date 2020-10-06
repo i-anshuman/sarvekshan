@@ -2,6 +2,7 @@
 
 const { verify } = require('../utils/jwt');
 const { validationResult } = require('express-validator');
+const { view } = require('../controllers/survey');
 
 const watchError = (req, res, next) => {
   const errors = validationResult(req);
@@ -30,4 +31,25 @@ const notFound = (req, res) => {
   res.status(404).json({ error: "404 Not Found!!" });
 };
 
-module.exports = { watchError, ensureAuthenticated, notFound };
+const isPublishable = (req, res, next) => {
+  const surveyID = req.params.surveyID;
+  const userID = res.locals.user._id;
+  const state = req.params.state === 'true';
+  view(surveyID, userID, (error, survey) => {
+    if (error) {
+      return res.status(400).json({ error });
+    }
+    if (!survey) {
+      return res.status(404).json({ error: "Survey not found." });
+    }
+    if (state && survey.questions.length === 0) {
+      return res.status(400).json({ error: "Survey must have at least one question, to be published." });
+    }
+    else if (state && survey.published) {
+      return res.status(400).json({ error: "Survey is already publihed." });
+    }
+    next();
+  });
+};
+
+module.exports = { watchError, ensureAuthenticated, notFound, isPublishable };
