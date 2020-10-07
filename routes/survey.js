@@ -5,13 +5,13 @@ const { add, list, view, publish, del, edit } = require('../controllers/survey')
 const { watchError, isPublishable, doesSurveyExist } = require('../middlewares');
 const {
   validateIDs,
-  valiateSurveyInputs,
+  validateSurveyInputs,
   validatePublishStatus,
   validateSurveyEditInputs
 } = require('../validators/survey');
 const question = require('./question');
 
-router.post('/new', valiateSurveyInputs(), watchError, (req, res) => {
+router.post('/new', validateSurveyInputs(), watchError, (req, res) => {
   const { title, description, validityDate, validityTime } = { ...req.body };
   const survey = {
     creatorID: res.locals.user._id,

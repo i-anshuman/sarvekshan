@@ -3,7 +3,7 @@
 const { body, param } = require('express-validator');
 const { capitalize } = require('../utils');
 
-const valiateSurveyInputs = () => (
+const validateSurveyInputs = () => (
   [
     body('title', `Title must be at least 5 characters long and can only contains alphabets, digits, and some special symbols (. : , ' - ).`)
       .trim().matches(/^[A-Za-z0-9 .:',-]+$/).isLength({min: 5}),
@@ -45,7 +45,7 @@ const validateSurveyEditInputs = () => (
 
 module.exports = {
   validateIDs,
-  valiateSurveyInputs,
+  validateSurveyInputs,
   validatePublishStatus,
   validateSurveyEditInputs
 };
