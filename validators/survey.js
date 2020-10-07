@@ -23,17 +23,6 @@ const validateIDs = (...parameters) => {
   ));
 };
 
-const valiateQuestionInputs = () => (
-  [
-    body('question', `Question can only have alphabets, digits, brackets and some special symbols (. : , ' - ?).`)
-      .trim().matches(/^[A-Za-z0-9 .:\(\)\[\]\{\}?',-]+$/),
-    body('type', `Option type can be either 'checkbox' or 'radio'.`)
-      .trim().isIn(['checkbox', 'radio']),
-    body('options.*', `Options can only have alphabets, digits, brackets and some special symbols (. : , ' - ?).`)
-      .trim().matches(/^[A-Za-z0-9 .:\(\)\[\]\{\}?',-]+$/)
-  ]
-);
-
 const validatePublishStatus = () => (
   [
     param('state', 'Survey publish state must be boolean (true or false).')
@@ -57,7 +46,6 @@ const validateSurveyEditInputs = () => (
 module.exports = {
   validateIDs,
   valiateSurveyInputs,
-  valiateQuestionInputs,
   validatePublishStatus,
   validateSurveyEditInputs
 };
