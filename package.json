@@ -5,7 +5,7 @@
   "main": "server.js",
   "private": true,
   "scripts": {
-      "dev": "NODE_ENV=dev nodemon server.js",
+    "dev": "NODE_ENV=dev nodemon server.js",
     "start": "NODE_ENV=prod node server.js"
   },
   "repository": {
@@ -36,6 +36,7 @@
     "express-validator": "^6.6.1",
     "helmet": "^4.1.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.7"
+    "mongoose": "^5.10.7",
+    "morgan": "^1.10.0"
   }
 }
