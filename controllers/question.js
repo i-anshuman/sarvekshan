@@ -51,4 +51,21 @@ const edit = (surveyID, userID, questionID, rawData, callback) => {
   );
 };
 
-module.exports = { add, del, edit };
+const find = (surveyID, userID, questionID, callback) => {
+  Surveys.findOne(
+    {
+      _id: new ObjectID(surveyID),
+      creatorID: new ObjectID(userID),
+      questions: {
+        $elemMatch: {
+          _id: questionID
+        }
+      }
+    },
+    (error, question) => {
+      callback(error, question);
+    }
+  );
+};
+
+module.exports = { add, del, edit, find };
