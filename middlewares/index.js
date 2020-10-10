@@ -3,6 +3,8 @@
 const { verify } = require('../utils/jwt');
 const { validationResult } = require('express-validator');
 const { view } = require('../controllers/survey');
+const { find } = require('../controllers/question');
+const questions = require('../models/questions');
 
 const watchError = (req, res, next) => {
   const errors = validationResult(req);
@@ -66,4 +68,27 @@ const doesSurveyExist = (req, res, next) => {
   });
 };
 
-module.exports = { watchError, ensureAuthenticated, notFound, isPublishable, doesSurveyExist };
+const doesQuestionExist = (req, res, next) => {
+  const userID = res.locals.user._id;
+  const surveyID = req.params.surveyID;
+  const questionID = req.params.questionID;
+  find(surveyID, userID, questionID, (error, question) => {
+    console.log(error, question)
+    if (error) {
+      return res.status(400).json({ error });
+    }
+    if (!question) {
+      return res.status(404).json({ error: "Question not found." });
+    }
+    next();
+  });
+};
+
+module.exports = {
+  notFound,
+  watchError,
+  isPublishable,
+  doesSurveyExist,
+  doesQuestionExist,
+  ensureAuthenticated
+};
