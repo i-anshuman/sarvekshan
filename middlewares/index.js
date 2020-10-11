@@ -4,7 +4,6 @@ const { verify } = require('../utils/jwt');
 const { validationResult } = require('express-validator');
 const { view } = require('../controllers/survey');
 const { find } = require('../controllers/question');
-const questions = require('../models/questions');
 
 const watchError = (req, res, next) => {
   const errors = validationResult(req);
@@ -73,7 +72,6 @@ const doesQuestionExist = (req, res, next) => {
   const surveyID = req.params.surveyID;
   const questionID = req.params.questionID;
   find(surveyID, userID, questionID, (error, question) => {
-    console.log(error, question)
     if (error) {
       return res.status(400).json({ error });
     }
